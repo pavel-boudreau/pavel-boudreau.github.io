@@ -10,8 +10,7 @@
         :root {
             --primary: #4f46e5;
             --primary-light: #818cf8;
-            --primary-dark: #3730a3;
-            --mentale: #7c3aed;
+            --mentale: #7c3aed; /* Purple for Mentale Mode */
             --success: #16a34a;
             --warning: #d97706;
             --error: #dc2626;
@@ -69,7 +68,7 @@
             flex-shrink: 0;
         }
         
-        .header-controls { display: flex; align-items: center; gap: 0.8rem; }
+        .header-controls { display: flex; align-items: center; gap: 0.5rem; }
         
         .timer { 
             font-family: 'Courier New', Courier, monospace;
@@ -77,6 +76,7 @@
             font-weight: 700; color: var(--text-main); font-size: 1.3rem;
             opacity: 1; transition: opacity 0.3s;
             background: #f1f5f9; padding: 2px 8px; border-radius: 6px;
+            margin-right: 0.3rem;
         }
         .timer.hidden { opacity: 0; }
 
@@ -87,6 +87,7 @@
             transition: background 0.2s, transform 0.2s;
         }
         .btn-icon:active { background: #e2e8f0; transform: scale(0.95); }
+        .btn-icon.active { color: var(--primary); background: #e0e7ff; }
 
         .stats-row {
             display: flex; justify-content: space-around;
@@ -108,6 +109,7 @@
             cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
         .toggle-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        
         .toggle-btn.mentale-active { background: var(--mentale); color: white; }
 
         .checkbox-row { display: flex; justify-content: space-between; padding: 0 4px; }
@@ -139,13 +141,13 @@
             font-size: 1.4rem; font-weight: 600; color: var(--text-main);
             cursor: pointer; transition: all 0.1s;
             display: flex; align-items: center; justify-content: center;
-            padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+            padding: 0; touch-action: manipulation;
         }
         .btn-opt:active:not(:disabled) { transform: scale(0.98); background: #f8fafc; }
         @media(hover: hover) { .btn-opt:hover:not(:disabled) { border-color: var(--primary-light); background: #f8fafc; } }
         
-        .btn-opt.correct { background: var(--success); color: white; border-color: var(--success) !important; }
-        .btn-opt.wrong { background: var(--error); color: white; border-color: var(--error) !important; }
+        .btn-opt.correct { background: var(--success); color: white; border-color: var(--success); }
+        .btn-opt.wrong { background: var(--error); color: white; border-color: var(--error); }
         .btn-opt:disabled { opacity: 1; cursor: default; }
 
         .input-container {
@@ -170,24 +172,16 @@
         }
         .btn-action:active { background: var(--primary-dark); }
 
-        /* FIXED FEEDBACK AREA */
         .feedback-area {
-            min-height: 120px; /* Fixed height to prevent jumps */
-            display: flex; flex-direction: column;
+            height: 110px; display: flex; flex-direction: column;
             align-items: center; justify-content: center; flex-shrink: 0;
             text-align: center; padding-top: 10px;
         }
-        .fb-msg { 
-            font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; 
-            min-height: 1.8rem; line-height: 1.2;
-        }
-        .fb-sub { 
-            font-size: 1rem; color: var(--text-muted); 
-            font-style: italic; min-height: 1.2rem; margin-bottom: 8px;
-        }
+        .fb-msg { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; min-height: 1.6rem; }
+        .fb-sub { font-size: 0.95rem; color: var(--text-muted); font-style: italic; min-height: 1.2rem; }
         
         .btn-next {
-            background: var(--text-main); color: white; border: none;
+            margin-top: 10px; background: var(--text-main); color: white; border: none;
             padding: 12px 32px; border-radius: 30px; font-size: 1rem; font-weight: 600;
             cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -196,7 +190,7 @@
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--card); z-index: 50; /* Higher z-index */
+            background: var(--card); z-index: 20;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             text-align: center; padding: 1rem;
@@ -248,6 +242,9 @@
         <h1>Élé-mentale</h1>
         <div class="header-controls">
             <div class="timer hidden" id="timerDisplay">00:00.00</div>
+            <button class="btn-icon" id="btnFullscreen" onclick="app.toggleFullscreen()" aria-label="Plein écran">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
             <button class="btn-icon" onclick="app.reset()" aria-label="Réinitialiser">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             </button>
@@ -340,7 +337,7 @@
             <button class="btn-action" onclick="app.reset()">Retour au menu</button>
         </div>
 
-        <div class="prompt-box font-serif" id="prompt"></div>
+        <div class="prompt-box font-serif" id="prompt">Ag</div>
 
         <div class="grid-options font-serif" id="optionsGrid"></div>
         
@@ -358,11 +355,6 @@
 </div>
 
 <script>
-/**
- * Élé-mentale: Mode Mentale (118)
- * Fixed Version
- */
-
 const baseElements = [
     {z:1,s:"H",n:"Hydrogène"},{z:2,s:"He",n:"Hélium"},{z:3,s:"Li",n:"Lithium"},{z:4,s:"Be",n:"Béryllium"},
     {z:5,s:"B",n:"Bore"},{z:6,s:"C",n:"Carbone"},{z:7,s:"N",n:"Azote"},{z:8,s:"O",n:"Oxygène"},
@@ -414,8 +406,7 @@ const app = {
         dir: 'symToName', mode: 'buttons',
         mentale: false,
         expert: false, speedrun: false,
-        startTS: 0, timerId: null, history: [],
-        processing: false
+        startTS: 0, timerId: null, history: []
     },
     
     ui: {
@@ -427,7 +418,8 @@ const app = {
         btns: { 
             s2n: document.getElementById('btnS2N'), n2s: document.getElementById('btnN2S'), 
             mBtn: document.getElementById('btnModeBtn'), mTxt: document.getElementById('btnModeTxt'),
-            d37: document.getElementById('btnDeck37'), d118: document.getElementById('btnDeck118')
+            d37: document.getElementById('btnDeck37'), d118: document.getElementById('btnDeck118'),
+            fs: document.getElementById('btnFullscreen')
         }
     },
 
@@ -440,6 +432,24 @@ const app = {
             else if(this.state.answered) this.next();
             else if(this.state.mode === 'text') this.checkText();
         });
+        
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                this.ui.btns.fs.classList.add('active');
+            } else {
+                this.ui.btns.fs.classList.remove('active');
+            }
+        });
+    },
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
     },
 
     setDir(d) {
@@ -467,22 +477,28 @@ const app = {
     updateStartInfo() {
         const { dir, mode, expert, speedrun, mentale } = this.state;
         const lblExp = document.getElementById('lblExpert');
-        if (mentale) lblExp.classList.add('hidden');
-        else lblExp.classList.remove('hidden');
+        if (mentale) {
+            lblExp.classList.add('hidden');
+        } else {
+            lblExp.classList.remove('hidden');
+        }
 
         this.ui.badges.dir.textContent = dir === 'symToName' ? 'SYMBOLE → NOM' : 'NOM → SYMBOLE';
         this.ui.badges.mode.textContent = mode === 'buttons' ? 'BOUTONS' : 'CLAVIER';
+        
         this.ui.badges.men.style.display = mentale ? 'inline-block' : 'none';
         this.ui.badges.exp.style.display = (!mentale && expert) ? 'inline-block' : 'none';
         this.ui.badges.spd.style.display = speedrun ? 'inline-block' : 'none';
 
         let desc = "";
-        if (mentale) desc += `<b>MODE MENTALE</b> : Le tableau complet (118). Courage. <br>`;
-        else {
+        if (mentale) {
+             desc += `<b>MODE MENTALE</b> : Le tableau complet (118). Courage. <br>`;
+        } else {
              desc += `Mode <b>Standard</b> (37 éléments). `;
              if(expert) desc += ` <span style="color:var(--warning)">Expert:</span> Pièges du tableau complet. <br>`;
              else desc += `<br>`;
         }
+
         if(speedrun) desc += `<span style="color:var(--error)">⚡ Speedrun :</span> Chrono précis, transitions éclairs.`;
         
         document.getElementById('startDesc').innerHTML = desc;
@@ -492,7 +508,6 @@ const app = {
     reset() {
         this.stopTimer();
         this.state.active = false;
-        this.state.processing = false;
         this.ui.screens.end.classList.add('hidden');
         this.ui.screens.start.classList.remove('hidden');
         document.getElementById('timerDisplay').classList.add('hidden');
@@ -502,8 +517,7 @@ const app = {
         this.ui.stats.alm.textContent = '0';
         this.ui.game.prompt.textContent = '';
         this.ui.game.grid.innerHTML = '';
-        this.ui.fb.main.textContent = ''; 
-        this.ui.fb.sub.textContent = '';
+        this.ui.fb.main.textContent = ''; this.ui.fb.sub.textContent = '';
         this.ui.game.next.classList.remove('visible');
         this.updateStartInfo();
     },
@@ -511,55 +525,34 @@ const app = {
     start() {
         document.getElementById('configArea').style.display = 'none';
         this.ui.screens.start.classList.add('hidden');
-        
-        // Deep copy to prevent reference issues
         this.state.deck = this.state.mentale ? [...fullTable] : [...baseElements];
-        
         this.state.err = 0; this.state.almost = 0;
         this.state.active = true;
-        this.state.processing = false;
         this.ui.stats.err.textContent = '0';
         this.ui.stats.alm.textContent = '0';
-
         if(this.state.speedrun) document.getElementById('timerDisplay').classList.remove('hidden');
-        
         this.nextQuestion(true);
         this.startTimer();
     },
 
     next() {
-        if (this.state.processing) return;
-        if (this.state.deck.length === 0) {
-            this.endGame();
-        } else {
-            this.nextQuestion();
-        }
+        if(this.state.deck.length === 0) return this.endGame();
+        this.nextQuestion();
     },
 
     nextQuestion(isFirst = false) {
-        // Safe transition logic
         if(!isFirst) {
             this.state.deck = this.state.deck.filter(e => e.z !== this.state.current.z);
-            if(this.state.deck.length === 0) {
-                this.endGame();
-                return;
-            }
+            if(this.state.deck.length === 0) return this.endGame();
         }
 
         this.state.answered = false;
-        this.state.processing = false;
         this.ui.stats.left.textContent = this.state.deck.length;
-        
         const idx = Math.floor(Math.random() * this.state.deck.length);
         this.state.current = this.state.deck[idx];
-
         this.ui.game.next.classList.remove('visible');
-        this.ui.fb.main.textContent = ''; 
-        this.ui.fb.sub.textContent = '';
-        this.ui.game.inp.value = ''; 
-        this.ui.game.inp.disabled = false; 
-        this.ui.game.sub.disabled = false;
-
+        this.ui.fb.main.textContent = ''; this.ui.fb.sub.textContent = '';
+        this.ui.game.inp.value = ''; this.ui.game.inp.disabled = false; this.ui.game.sub.disabled = false;
         const isS2N = this.state.dir === 'symToName';
         this.ui.game.prompt.textContent = isS2N ? this.state.current.s : this.state.current.n;
 
@@ -577,7 +570,6 @@ const app = {
     renderButtons(isS2N) {
         this.ui.game.grid.innerHTML = '';
         const pool = (this.state.mentale || this.state.expert) ? fullTable : baseElements;
-        
         const promptStr = this.ui.game.prompt.textContent;
         const promptFirstChar = promptStr.charAt(0).toUpperCase();
         const distractorProp = isS2N ? 'n' : 's'; 
@@ -594,9 +586,7 @@ const app = {
             let r = pool[Math.floor(Math.random() * pool.length)];
             if(!options.some(o => o.z === r.z)) options.push(r);
         }
-
         options.sort(() => Math.random() - 0.5);
-
         options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'btn-opt font-serif';
@@ -608,7 +598,6 @@ const app = {
 
     checkBtn(selected, btnEl) {
         if(this.state.answered) return;
-        
         if(selected.z === this.state.current.z) {
             btnEl.classList.add('correct');
             this.success("Correct !");
@@ -635,28 +624,22 @@ const app = {
 
         const isS2N = this.state.dir === 'symToName';
         const correct = isS2N ? this.state.current.n : this.state.current.s;
-
-        // Exact match
         if(val === correct) return this.success("Parfait !");
-
         const normVal = val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const normCor = correct.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-        // Case insensitivity check
         if(val.toLowerCase() === correct.toLowerCase()) {
-            if(!isS2N) { // Trying to type symbol (e.g. 'he' for 'He')
+            if(!isS2N) {
                  if(this.state.speedrun) {
                      this.ui.game.inp.classList.add('shake');
                      return this.fail("Faux (Casse) !", `Attendu : ${correct}`);
                  }
                  this.state.almost++; this.ui.stats.alm.textContent = this.state.almost;
-                 // Pass true for isWarn to set color to warning
                  return this.success("Attention Majuscule", `C'est ${correct}`, true);
             }
             return this.success("Correct !");
         }
 
-        // Accent insensitivity check
         if(normVal === normCor) {
             if(this.state.speedrun) {
                 this.ui.game.inp.classList.add('shake');
@@ -665,7 +648,6 @@ const app = {
             this.state.almost++; this.ui.stats.alm.textContent = this.state.almost;
             return this.success("Presque...", `Accents : ${correct}`, true);
         }
-
         this.ui.game.inp.classList.add('shake');
         this.fail("Incorrect", `Réponse : ${correct}`);
     },
@@ -676,15 +658,9 @@ const app = {
         this.ui.fb.main.style.color = isWarn ? "var(--warning)" : "var(--success)";
         this.ui.fb.sub.textContent = subMsg;
         this.lockUI();
-        
         if(this.state.speedrun) {
-            // Processing flag prevents double triggers
-            this.state.processing = true;
-            const delay = this.state.mode === 'text' ? 200 : 200; // Increased slightly for visibility
-            setTimeout(() => {
-                this.state.processing = false;
-                this.next();
-            }, delay);
+            const delay = this.state.mode === 'text' ? 50 : 150;
+            setTimeout(() => this.next(), delay);
         } else {
             this.ui.game.next.classList.add('visible');
             this.ui.game.next.focus();
@@ -695,12 +671,10 @@ const app = {
         this.state.answered = true;
         this.state.err++;
         this.ui.stats.err.textContent = this.state.err;
-        
         this.ui.fb.main.textContent = msg;
         this.ui.fb.main.style.color = "var(--error)";
         this.ui.fb.sub.textContent = subMsg;
         this.lockUI();
-
         if(highlightCorrect && this.state.mode === 'buttons') {
             const ans = this.state.dir === 'symToName' ? this.state.current.n : this.state.current.s;
             Array.from(this.ui.game.grid.children).forEach(b => {
@@ -726,7 +700,6 @@ const app = {
         }, 34); 
     },
     stopTimer() { clearInterval(this.state.timerId); },
-    
     formatTime(ms) {
         const min = Math.floor(ms/60000);
         const sec = Math.floor((ms%60000)/1000);
@@ -735,17 +708,13 @@ const app = {
     },
 
     endGame() {
-        this.state.processing = true; // Lock accidental inputs
         this.stopTimer();
         this.state.active = false;
-        
         const finalMs = Date.now() - this.state.startTS;
         const timeStr = this.formatTime(finalMs);
-        
         document.getElementById('endTime').textContent = timeStr;
         document.getElementById('endAlmost').textContent = this.state.almost;
         document.getElementById('endErr').textContent = this.state.err;
-        
         const title = document.getElementById('endTitle');
         if(this.state.err === 0 && this.state.almost === 0) {
             title.textContent = "MAGISTRAL !"; title.style.color = "var(--warning)";
@@ -756,20 +725,14 @@ const app = {
         } else {
             title.textContent = "TERMINÉ"; title.style.color = "var(--primary)";
         }
-
         let tag = (this.state.dir === 'symToName' ? 'S→N' : 'N→S');
         tag += (this.state.mode === 'text' ? ' Clavier' : ' QCM');
-        
         if(this.state.mentale) tag += ' Mentale';
         else if(this.state.expert) tag += ' Exp';
-        
         if(this.state.speedrun) tag += ' ⚡';
-
         this.state.history.unshift({tag, time: timeStr, err: this.state.err, alm: this.state.almost});
         this.state.history = this.state.history.slice(0, 5);
         this.renderHistory();
-
-        // Ensure overlay is visible regardless of animation state
         this.ui.screens.end.classList.remove('hidden');
     },
 
@@ -781,11 +744,7 @@ const app = {
             div.className = 'hist-row';
             if(h.err === 0 && h.alm === 0) div.classList.add('row-perfect');
             else if(h.err === 0) div.classList.add('row-clean');
-            
-            div.innerHTML = `
-                <div><span class="hist-tag">${h.tag}</span> <b>${h.time}</b></div>
-                <div style="font-size:0.8rem">Err: <b>${h.err}</b></div>
-            `;
+            div.innerHTML = `<div><span class="hist-tag">${h.tag}</span> <b>${h.time}</b></div><div style="font-size:0.8rem">Err: <b>${h.err}</b></div>`;
             list.appendChild(div);
         });
     }
@@ -794,7 +753,6 @@ const app = {
 const cvs = document.getElementById('fireworks');
 const ctx = cvs.getContext('2d');
 let particles = [];
-
 window.addEventListener('resize', () => { cvs.width = window.innerWidth; cvs.height = window.innerHeight; });
 window.dispatchEvent(new Event('resize'));
 
@@ -844,4 +802,3 @@ app.init();
 </script>
 </body>
 </html>
-</code>
