@@ -1,3 +1,4 @@
+<code>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -843,3 +844,4 @@ app.init();
 </script>
 </body>
 </html>
+</code>
